@@ -18,13 +18,13 @@
     <div class="product">
       <div class="product__item" v-for="item in list" :key="item._id">
         <img
-          src="http://www.dell-lee.com/imgs/vue3/near.png"
+          :src="item.imgUrl"
           alt=""
           class="product__item__img"
         />
         <div class="product__item__list">
           <h4 class="product__item__title">{{ item.name }}</h4>
-          <p class="product__item__sales">{{ item.sales }}</p>
+          <p class="product__item__sales">月售{{ item.sales }}</p>
           <p class="product__item__price">
             <span class="product__item__yen">&yen;</span>{{ item.price }}
             <span class="product__item__origin">&yen;{{ item.oldPrice }}</span>
@@ -40,7 +40,7 @@
             "
             >-</span
           >
-          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
+          {{ item.count || 0 }}
           <span
             class="product__number__plus"
             @click="
@@ -103,15 +103,14 @@ export default {
     const shopId = route.params.id;
     const { handleCategoryClick, currentTab } = useTabEffect();
     const { list } = useCurrentListEffect(currentTab, shopId);
-    const { changeCartItemInfo, cartList } = useCommonCartEffect();
+    const { changeCartItemInfo, } = useCommonCartEffect();
     return {
       list,
       shopId,
       currentTab,
       categories,
       handleCategoryClick,
-      changeCartItemInfo,
-      cartList,
+      changeCartItemInfo
     };
   },
 };

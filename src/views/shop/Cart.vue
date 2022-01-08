@@ -1,16 +1,16 @@
 <template>
   <div class="check">
     <div class="product">
-      <template  v-for="item in productlist" :key="item._id">
+      <template v-for="item in productlist" :key="item._id">
         <div class="product__item" v-if="item.count > 0">
-          <img
-            src="http://www.dell-lee.com/imgs/vue3/near.png"
-            alt=""
-            class="product__item__img"
+          <div
+            class="product__item__icon iconfont"
+            v-html="item.check ? '&#xe652;' : '&#xe6f7;'"
+            @click="() => changeCartItemChecked(shopId, item._id)"
           />
+          <img :src="item.imgUrl" alt="" class="product__item__img" />
           <div class="product__item__list">
             <h4 class="product__item__title">{{ item.name }}</h4>
-            <p class="product__item__sales">{{ item.sales }}</p>
             <p class="product__item__price">
               <span class="product__item__yen">&yen;</span>{{ item.price }}
               <span class="product__item__origin"
@@ -28,7 +28,7 @@
               "
               >-</span
             >
-            {{item.count || 0 }}
+            {{ item.count || 0 }}
             <span
               class="product__number__plus"
               @click="
@@ -61,10 +61,8 @@ import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useCommonCartEffect } from "./commonCartEffect";
 
-const useCartEffect = () => {
+const useCartEffect = (shopId) => {
   const store = useStore();
-  const route = useRoute();
-  const shopId = route.params.id;
   const { cartList } = store.state;
   const total = computed(() => {
     const productList = cartList[shopId];
@@ -92,15 +90,28 @@ const useCartEffect = () => {
     const productList = cartList[shopId] || [];
     return productList;
   });
-  return { total, price, productlist };
+  const changeCartItemChecked = (shopId, productId) => {
+    store.commit("changeCartItemChecked", { shopId, productId });
+  };
+  return { total, price, productlist, changeCartItemChecked };
 };
 
 export default {
   name: "Cart",
   setup() {
-    const { total, price, productlist } = useCartEffect();
+    const route = useRoute();
+    const shopId = route.params.id;
+    const { total, price, productlist, changeCartItemChecked } =
+      useCartEffect(shopId);
     const { changeCartItemInfo } = useCommonCartEffect();
-    return { total, price, changeCartItemInfo, productlist };
+    return {
+      shopId,
+      total,
+      price,
+      changeCartItemInfo,
+      productlist,
+      changeCartItemChecked,
+    };
   },
 };
 </script>
@@ -167,29 +178,33 @@ export default {
 }
 .product {
   overflow-y: scroll;
-  flex:1;
+  flex: 1;
   padding-left: 0.16rem;
   &__item {
-    padding-bottom: 0.15rem;
+    padding: 0.16rem 0;
     border-bottom: 1px solid #f1f1f1;
-    margin-bottom: 0.15rem;
     display: flex;
+    align-items: center;
+    &__icon {
+      margin-right: 0.2rem;
+      color: #0091ff;
+      font-size: 0.2rem;
+    }
     &__img {
-      width: 0.68rem;
-      height: 0.68rem;
+      width: 0.46rem;
+      height: 0.46rem;
     }
     &__list {
       flex: 1;
       padding-left: 0.16rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
     }
     &__title {
       font-size: 0.14rem;
       color: #333;
-    }
-    &__sales {
-      font-size: 0.14rem;
-      margin: 0.08rem 0;
-      color: #333;
+      padding-bottom: 0.06rem;
     }
     &__price {
       font-size: 14px;
@@ -210,7 +225,7 @@ export default {
     width: 0.76rem;
     margin-right: 0.18rem;
     display: flex;
-    align-items: flex-end;
+    align-items: center;
     justify-content: center;
     font-size: 0.16rem;
     &__minus,
