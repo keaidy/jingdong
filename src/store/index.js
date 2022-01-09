@@ -39,6 +39,18 @@ export default Vuex.createStore({
       const { shopId, productId } = payload
       const product = state.cartList[shopId][productId]
       product.check = !product.check
+    },
+    allCartItemCleared(state,payload){
+      const {shopId} = payload;
+      state.cartList[shopId] = {};
+    },
+    setCartItemsChecked(state,payload){
+      const {shopId} = payload;
+      const products =  state.cartList[shopId];
+      for(let i in products){
+        let product = products[i]
+        product.check = true
+      }
     }
   },
   actions: {

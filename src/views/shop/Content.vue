@@ -40,7 +40,7 @@
             "
             >-</span
           >
-          {{ item.count || 0 }}
+          {{ cartList?.[shopId]?.[item._id]?.count || 0 }}
           <span
             class="product__number__plus"
             @click="
@@ -103,14 +103,15 @@ export default {
     const shopId = route.params.id;
     const { handleCategoryClick, currentTab } = useTabEffect();
     const { list } = useCurrentListEffect(currentTab, shopId);
-    const { changeCartItemInfo, } = useCommonCartEffect();
+    const { changeCartItemInfo, cartList} = useCommonCartEffect();
     return {
       list,
       shopId,
       currentTab,
       categories,
       handleCategoryClick,
-      changeCartItemInfo
+      changeCartItemInfo,
+      cartList
     };
   },
 };
