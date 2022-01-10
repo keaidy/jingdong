@@ -14,7 +14,7 @@
       </div>
     </div>
     <ShopInfo :item="item" :hideBorder="true" />
-    <Content/>
+    <Content :shopName='item.name'/>
     <Cart/>
   </div>
 </template>

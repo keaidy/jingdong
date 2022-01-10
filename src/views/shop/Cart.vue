@@ -14,7 +14,6 @@
         <div
           class="check__header__clear"
           @click="() => allCartItemCleared(shopId)"
-      
         >
           清空购物车
         </div>
@@ -78,16 +77,17 @@
 </template>
 
 <script>
-import { computed } from "vue";
+import { computed ,ref} from "vue";
 import { useStore } from "vuex";
 import { useRoute } from "vue-router";
 import { useCommonCartEffect } from "./commonCartEffect";
 
+// 获取购物车信息逻辑
 const useCartEffect = (shopId) => {
   const store = useStore();
   const { cartList } = store.state;
   const total = computed(() => {
-    const productList = cartList[shopId];
+    const productList = cartList[shopId]?.productList;
     let count = 0;
     if (productList) {
       for (let i in productList) {
@@ -98,20 +98,20 @@ const useCartEffect = (shopId) => {
     return count;
   });
   const price = computed(() => {
-    const productList = cartList[shopId];
+    const productList = cartList[shopId]?.productList;
     let count = 0;
     if (productList) {
       for (let i in productList) {
         const product = productList[i];
         if (product.check) {
-          count += product.price * product.count;
+          count += (product.price * product.count);
         }
       }
     }
     return count.toFixed(2);
   });
   const allChecked = computed(() => {
-    const products = cartList[shopId];
+    const products = cartList[shopId]?.productList;
     let allChecked = true;
     if (products) {
       for (let i in products) {
@@ -124,7 +124,7 @@ const useCartEffect = (shopId) => {
     return allChecked;
   });
   const productlist = computed(() => {
-    const productList = cartList[shopId] || [];
+    const productList = cartList[shopId]?.productList || [];
     return productList;
   });
   const changeCartItemChecked = (shopId, productId) => {
@@ -146,12 +146,13 @@ const useCartEffect = (shopId) => {
     setCartItemsChecked,
   };
 };
-const toggleCartEffect=()=>{
-  let showCart =false;
-  const handleCartShowChange=()=>{
-    showCart= !showCart
+// 展示隐藏购物车逻辑
+const toggleCartEffect = () => {
+  const showCart = ref(false)
+  const handleCartShowChange = () => {
+    showCart.value = !showCart.value;
   }
-  return {showCart,handleCartShowChange}
+  return { showCart, handleCartShowChange}
 }
 export default {
   name: "Cart",
