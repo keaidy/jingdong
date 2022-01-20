@@ -71,7 +71,9 @@
       <div class="cart__price">
         总计：<span class="cart__price__check">&yen;{{ price }}</span>
       </div>
-      <div class="cart__go">去结算</div>
+      <router-link :to="{path: `/orderconfirmation/${shopId}`}">
+        <div class="cart__go">去结算</div>
+      </router-link>
     </div>
   </div></div>
 </template>
@@ -96,19 +98,6 @@ const useCartEffect = (shopId) => {
       }
     }
     return count;
-  });
-  const price = computed(() => {
-    const productList = cartList[shopId]?.productList;
-    let count = 0;
-    if (productList) {
-      for (let i in productList) {
-        const product = productList[i];
-        if (product.check) {
-          count += (product.price * product.count);
-        }
-      }
-    }
-    return count.toFixed(2);
   });
   const allChecked = computed(() => {
     const products = cartList[shopId]?.productList;
@@ -138,7 +127,6 @@ const useCartEffect = (shopId) => {
   };
   return {
     total,
-    price,
     productlist,
     changeCartItemChecked,
     allChecked,
@@ -161,14 +149,13 @@ export default {
     const shopId = route.params.id;
     const {
       total,
-      price,
       productlist,
       changeCartItemChecked,
       allCartItemCleared,
       setCartItemsChecked,
       allChecked,
     } = useCartEffect(shopId);
-    const { changeCartItemInfo } = useCommonCartEffect();
+    const { changeCartItemInfo ,price} = useCommonCartEffect(shopId);
     const {showCart,handleCartShowChange} = toggleCartEffect()
     return {
       shopId,
